@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Análise da Assembleia Paroquial 2026</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #6a9bd8;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            margin-top: 25px;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 20px;
+            color: var(--primary-color);
+        }
+        
+        .section-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            border-left: 5px solid;
+            margin-bottom: 10px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header i {
+            font-size: 1.8rem;
+            margin-right: 15px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+        }
+        
+        .section-title {
+            font-size: 1.6rem;
+            color: var(--dark-color);
+        }
+        
+        .summary-section { border-left-color: var(--primary-color); }
+        .summary-section .section-header i { background-color: var(--primary-color); }
+        
+        .positive-section { border-left-color: var(--success-color); }
+        .positive-section .section-header i { background-color: var(--success-color); }
+        
+        .grade-section { border-left-color: #ffc107; }
+        .grade-section .section-header i { background-color: #ffc107; }
+        
+        .thematic-section { border-left-color: #9c27b0; }
+        .thematic-section .section-header i { background-color: #9c27b0; }
+        
+        .suggestions-section { border-left-color: var(--warning-color); }
+        .suggestions-section .section-header i { background-color: var(--warning-color); }
+        
+        .strengths-section { border-left-color: var(--info-color); }
+        .strengths-section .section-header i { background-color: var(--info-color); }
+        
+        .attention-section { border-left-color: #e91e63; }
+        .attention-section .section-header i { background-color: #e91e63; }
+        
+        .conclusion-section { border-left-color: #009688; }
+        .conclusion-section .section-header i { background-color: #009688; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: #666;
+        }
+        
+        .percentage-bar {
+            height: 24px;
+            background-color: #e9ecef;
+            border-radius: 12px;
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .percentage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background-color: #fff9e6;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-bottom: 8px;
+        }
+        
+        .badge-high {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-positive {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-average {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 20px;
+        }
+        
+        .print-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .print-button:hover {
+            background-color: #1a4680;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                max-width: 100%;
+            }
+            
+            .section-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+            
+            .print-button {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1><i class="fas fa-church"></i> Dashboard da Avaliação</h1>
+            <h2>Assembleia Paroquial 2026 - Paróquia São Daniel Comboni</h2>
+            <p>Relatório baseado em 67 respostas da pesquisa de avaliação (11 a 16 de janeiro de 2026)</p>
+        </header>
+        
+        <!-- RESUMO GERAL -->
+        <section class="section-card summary-section">
+            <div class="section-header">
+                <i class="fas fa-chart-bar"></i>
+                <h2 class="section-title">Resumo Geral da Participação</h2>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">138</div>
+                    <div class="stat-label">Total de Inscritos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">103</div>
+                    <div class="stat-label">Participantes Ativos (2 dias)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">67</div>
+                    <div class="stat-label">Avaliações Recebidas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">65%</div>
+                    <div class="stat-label">Taxa de Resposta</div>
+                    <span class="badge badge-high">ALTA</span>
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <p><strong>Taxa de resposta é considerada ALTA</strong>, o que dá robustez aos dados coletados.</p>
+            </div>
+        </section>
+        
+        <!-- PRINCIPAIS PONTOS POSITIVOS -->
+        <section class="section-card positive-section">
+            <div class="section-header">
+                <i class="fas fa-thumbs-up"></i>
+                <h2 class="section-title">Principais Pontos Positivos</h2>
+            </div>
+            
+            <h3><i class="fas fa-hands-helping"></i> Acolhida e Organização</h3>
+            <div class="percentage-bar">
+                <div class="percentage-fill" style="width: 92.5%">92.5%</div>
+            </div>
+            <p><strong>92,5%</strong> classificaram como "Ótimo" ou "Bom".</p>
+            <p>Elogios à pontualidade, clareza das informações e simpatia da recepção.</p>
+            
+            <h3><i class="fas fa-pray"></i> Conteúdo e Espiritualidade</h3>
+            <div class="percentage-bar">
+                <div class="percentage-fill" style="width: 86.5%">86.5%</div>
+            </div>
+            <p><strong>86,5%</strong> consideraram que os temas atenderam às expectativas ("Muito" ou "Bastante").</p>
+            <p><strong>88%</strong> acreditam que as reflexões ajudarão na vida espiritual, comunitária ou pastoral.</p>
+            
+            <h3><i class="fas fa-users"></i> Metodologia e Participação</h3>
+            <div class="percentage-bar">
+                <div class="percentage-fill" style="width: 95%">95%</div>
+            </div>
+            <p><strong>95%</strong> sentiram-se à vontade para participar dos grupos e partilhas.</p>
+            <p>A dinâmica de grupos foi destacada como proveitosa e inclusiva.</p>
+            
+            <h3><i class="fas fa-building"></i> Infraestrutura e Serviços</h3>
+            <div class="percentage-bar">
+                <div class="percentage-fill" style="width: 85%">85%</div>
+            </div>
+            <p><strong>85%</strong> satisfeitos com alimentação e intervalos.</p>
+            <p><strong>87%</strong> avaliação positiva da equipe de apoio.</p>
+        </section>
+        
+        <!-- NOTA GERAL -->
+        <section class="section-card grade-section">
+            <div class="section-header">
+                <i class="fas fa-star"></i>
+                <h2 class="section-title">Nota Geral da Assembleia</h2>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="font-size: 3.5rem; font-weight: 700; color: #ff9800;">8,9</div>
+                <div style="font-size: 1.2rem; color: #666;">média em uma escala de 0 a 10</div>
+            </div>
+            
+            <h3>Distribuição das Notas</h3>
+            <ul>
+                <li><strong>10</strong> → 23 respostas (34%)</li>
+                <li><strong>9</strong> → 26 respostas (39%)</li>
+                <li><strong>8</strong> → 16 respostas (24%)</li>
+                <li><strong>7 ou menos</strong> → 2 respostas com nota 2 (3%)</li>
+            </ul>
+            
+            <div class="highlight">
+                <p><strong>Avaliação:</strong> mais de 80% das notas foram 8, 9 ou 10 → avaliação <strong>MUITO POSITIVA</strong>.</p>
+                <p>Duas notas baixas (2) indicam insatisfação pontual relevante (conteúdo, metodologia e organização).</p>
+            </div>
+        </section>
+        
+        <!-- AVALIAÇÃO POR BLOCOS TEMÁTICOS -->
+        <section class="section-card thematic-section">
+            <div class="section-header">
+                <i class="fas fa-chart-pie"></i>
+                <h2 class="section-title">Avaliação por Blocos Temáticos</h2>
+            </div>
+            
+            <h3><i class="fas fa-door-open"></i> A. Acolhida e organização</h3>
+            <p><strong>92%</strong> classificaram como "Ótimo" ou "Bom".</p>
+            <p><strong>100%</strong> sentiu-se bem orientado.</p>
+            
+            <h3><i class="fas fa-praying-hands"></i> B. Conteúdo e espiritualidade</h3>
+            <p><strong>85%</strong> consideram que os temas atenderam expectativas.</p>
+            <p><strong>85%</strong> acreditam que as reflexões ajudarão na vida espiritual/pastoral.</p>
+            
+            <h3><i class="fas fa-comments"></i> C. Metodologia e participação</h3>
+            <p><strong>100%</strong> sentiu-se à vontade para participar.</p>
+            <p><strong>85%</strong> consideram que metodologia facilitou diálogo.</p>
+            
+            <h3><i class="fas fa-utensils"></i> D. Infraestrutura e serviços</h3>
+            <p><strong>90%</strong> avaliação positiva do espaço físico.</p>
+            <p><strong>85%</strong> satisfeitos com alimentação/intervalos.</p>
+            
+            <h3><i class="fas fa-seedling"></i> E. Frutos que leva da Assembleia</h3>
+            <ol>
+                <li><strong>Escuta ativa e diálogo</strong> como prática pastoral.</li>
+                <li><strong>Sentimento de comunhão e pertencimento</strong> à paróquia.</li>
+                <li><strong>Compromisso renovado</strong> com a missão e a comunidade.</li>
+                <li><strong>Aprendizado sobre sinodalidade e planejamento pastoral.</strong></li>
+                <li><strong>Maior clareza sobre desafios e prioridades</strong> do triênio 2026-2028.</li>
+            </ol>
+        </section>
+        
+        <!-- SUGESTÕES E MELHORIAS -->
+        <section class="section-card suggestions-section">
+            <div class="section-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2 class="section-title">Sugestões e Melhorias</h2>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Categoria de Melhoria</th>
+                        <th>Sugestões Específicas</th>
+                        <th>Frequência</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Organização / Logística</strong></td>
+                        <td>Mais voluntários no credenciamento</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Melhorar equipe de animação (músicos, cantores)</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Espaço mais arejado / ventiladores</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Metodologia / Conteúdo</strong></td>
+                        <td>Mais tempo para grupos / partilha</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Mediação mais neutra e acolhedora</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Envolver mais jovens e comunidades</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Espiritualidade</strong></td>
+                        <td>Mais momentos de oração / silêncio</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Infraestrutura</strong></td>
+                        <td>Mais opções de alimentação</td>
+                        <td>3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <!-- PONTOS FORTES -->
+        <section class="section-card strengths-section">
+            <div class="section-header">
+                <i class="fas fa-check-circle"></i>
+                <h2 class="section-title">Pontos Fortes da Assembleia</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                <div style="background: #e8f4fd; padding: 15px; border-radius: 8px;">
+                    <h4><i class="fas fa-hands" style="color: #2196f3;"></i> Acolhida e Organização</h4>
+                    <p>Bem avaliadas (92,5% "Ótimo" ou "Bom")</p>
+                </div>
+                <div style="background: #e8f4fd; padding: 15px; border-radius: 8px;">
+                    <h4><i class="fas fa-book" style="color: #2196f3;"></i> Conteúdo Relevante</h4>
+                    <p>Aplicável à vida pastoral (86,5% satisfeitos)</p>
+                </div>
+                <div style="background: #e8f4fd; padding: 15px; border-radius: 8px;">
+                    <h4><i class="fas fa-users" style="color: #2196f3;"></i> Metodologia Participativa</h4>
+                    <p>Funcionou bem (95% sentiram-se à vontade)</p>
+                </div>
+                <div style="background: #e8f4fd; padding: 15px; border-radius: 8px;">
+                    <h4><i class="fas fa-building" style="color: #2196f3;"></i> Espaço Físico</h4>
+                    <p>Considerado adequado (70% "Ótimo" ou "Bom")</p>
+                </div>
+                <div style="background: #e8f4fd; padding: 15px; border-radius: 8px;">
+                    <h4><i class="fas fa-user-friends" style="color: #2196f3;"></i> Equipe de Apoio</h4>
+                    <p>Elogiada (87% avaliação positiva)</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- PONTOS DE ATENÇÃO E RECOMENDAÇÕES -->
+        <section class="section-card attention-section">
+            <div class="section-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h2 class="section-title">Pontos de Atenção e Recomendações</h2>
+            </div>
+            
+            <ol>
+                <li><strong>Credenciamento:</strong> aumentar equipe voluntária e otimizar processo.</li>
+                <li><strong>Mediação:</strong> capacitar mediadores para postura mais acolhedora e menos interventiva.</li>
+                <li><strong>Tempo:</strong> reconsiderar duração das atividades; priorizar sínteses objetivas.</li>
+                <li><strong>Participação jovem:</strong> estratégias para engajar mais jovens.</li>
+                <li><strong>Clima físico:</strong> verificar ventilação, sombra, conforto térmico.</li>
+                <li><strong>Animação:</strong> planejar momentos de descontração e música.</li>
+                <li><strong>Resultados:</strong> comunicar desdobramentos práticos da assembleia.</li>
+            </ol>
+        </section>
+        
+        <!-- CONCLUSÃO GERAL -->
+        <section class="section-card conclusion-section">
+            <div class="section-header">
+                <i class="fas fa-flag-checkered"></i>
+                <h2 class="section-title">Conclusão Geral e Próximos Passos</h2>
+            </div>
+            
+            <div class="highlight">
+                <p>A Assembleia Paroquial 2026 foi <strong>avaliada positivamente</strong> pela maioria dos participantes, com nota média próxima de <strong>9</strong>, indicando que os objetivos de escuta, partilha e planejamento foram em grande parte alcançados.</p>
+            </div>
+            
+            <p>Os principais desafios apontados são de <strong>natureza logística e metodológica</strong>, com espaço claro para melhorias na mediação, tempo e inclusão de jovens. A alta taxa de participação ativa (103 pessoas) e o engajamento na pesquisa (67 respostas) demonstram <strong>alto nível de envolvimento comunitário</strong>.</p>
+            
+            <p>A paróquia possui <strong>base sólida</strong> para aperfeiçoar as próximas edições, com sugestões claras e priorizáveis.</p>
+            
+            <h3>Próximos Passos Sugeridos:</h3>
+            <ul>
+                <li>Compartilhar esta análise com a equipe de coordenação e participantes.</li>
+                <li>Enviar a todos os participantes o material solicitado e a síntese final com as prioridades para 2026-2028.</li>
+                <li>Manter o canal de escuta aberto para continuar aperfeiçoando os processos.</li>
+            </ul>
+        </section>
+        
+        <div class="button-container">
+            <button class="print-button" onclick="window.print()">
+                <i class="fas fa-print"></i> Gerar PDF / Imprimir Dashboard
+            </button>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Relatório elaborado com base em 67 respostas da pesquisa de avaliação da Assembleia Paroquial 2026</strong></p>
+            <p>Dados recolhidos de 11 a 16 de janeiro de 2026 | Paróquia São Daniel Comboni</p>
+        </div>
+    </div>
+
+    <script>
+        // Adiciona funcionalidade para destacar seções ao passar o mouse
+        document.querySelectorAll('.section-card').forEach(card => {
+            card.addEventListener('mouseover', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            
+            card.addEventListener('mouseout', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Adiciona ano atual no footer
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentYear = new Date().getFullYear();
+            const footer = document.querySelector('.footer');
+            const yearElement = document.createElement('p');
+            yearElement.innerHTML = `&copy; ${currentYear} - Paróquia São Daniel Comboni`;
+            footer.appendChild(yearElement);
+        });
+    </script>
+</body>
+</html>
